@@ -145,6 +145,11 @@ public class Main extends javax.swing.JFrame {
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        try {
+            tr.setFase("a" + ";" + txtNome.getText() + ";", p);
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnConnectActionPerformed
 
     public static void main(String args[]) {

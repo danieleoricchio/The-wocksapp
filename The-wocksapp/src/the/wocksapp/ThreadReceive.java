@@ -38,5 +38,16 @@ public class ThreadReceive extends Thread {
             System.out.println(new String(Packet.getData()));
         }
     }
+    
+    public void setFase(String fase, Peer p) throws IOException{
+        if(fase.substring(0, 1).equals("a")){
+            System.out.println("ciao");
+            byte[] buffer = ("y" + ";" + p.getName() + ";").getBytes();
+            DatagramPacket packetRisposta = new DatagramPacket(buffer, buffer.length, p.getIpAddress(), p.getPort());
+            Receive_socket.send(packetRisposta);
+        }else{
+            System.out.println("no");
+        }
+    }
 
 }
