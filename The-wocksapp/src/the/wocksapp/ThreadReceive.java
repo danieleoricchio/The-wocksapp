@@ -35,7 +35,7 @@ public class ThreadReceive extends Thread {
             } catch (IOException ex) {
                 java.util.logging.Logger.getLogger(ThreadReceive.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
-            System.out.println(Packet.getData());
+            System.out.println(new String(Packet.getData()));
         }
     }
 

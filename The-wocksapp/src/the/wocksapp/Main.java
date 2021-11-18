@@ -7,6 +7,7 @@ package the.wocksapp;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
@@ -19,8 +20,10 @@ public class Main extends javax.swing.JFrame {
     ThreadReceive tr;
     SendPacket sp;
 
-    public Main() {
+    public Main() throws SocketException {
         initComponents();
+        tr = new ThreadReceive();
+        tr.start();
     }
 
     @SuppressWarnings("unchecked")
@@ -171,7 +174,11 @@ public class Main extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Main().setVisible(true);
+                try {
+                    new Main().setVisible(true);
+                } catch (SocketException ex) {
+                    java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                }
             }
         });
     }
