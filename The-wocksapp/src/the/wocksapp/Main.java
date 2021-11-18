@@ -9,6 +9,9 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,12 +20,11 @@ import java.net.UnknownHostException;
 public class Main extends javax.swing.JFrame {
 
     Peer p;
-    ThreadReceive tr;
-    SendPacket sp;
+    HandlePackets tr;
 
     public Main() throws SocketException {
         initComponents();
-        tr = new ThreadReceive();
+        tr = new HandlePackets();
         tr.start();
     }
 
@@ -132,24 +134,25 @@ public class Main extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        
+
     }//GEN-LAST:event_btnSendActionPerformed
 
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         int port = Integer.parseInt(txtPort.getText().trim());
         try {
             p = new Peer(txtNome.getText(), txtIp.getText().trim(), port);
-            sp = new SendPacket(p);
         } catch (UnknownHostException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         try {
-            tr.setFase("a" + ";" + txtNome.getText() + ";", p);
+            tr.HandlePhases("a" + ";" + txtNome.getText() + ";", p);
+            JOptionPane.showMessageDialog(this, "Connesso!");           
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
+        } 
+
     }//GEN-LAST:event_btnConnectActionPerformed
 
     public static void main(String args[]) {

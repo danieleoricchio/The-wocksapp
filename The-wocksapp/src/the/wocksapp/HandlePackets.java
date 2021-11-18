@@ -15,12 +15,12 @@ import java.net.SocketException;
  *
  * @author Daniele
  */
-public class ThreadReceive extends Thread {
+public class HandlePackets extends Thread {
 
     public DatagramSocket Receive_socket;
     public boolean running;
 
-    public ThreadReceive() throws SocketException {
+    public HandlePackets() throws SocketException {
         Receive_socket = new DatagramSocket(12345);
     }
 
@@ -33,21 +33,24 @@ public class ThreadReceive extends Thread {
             try {
                 Receive_socket.receive(Packet);
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(ThreadReceive.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
             System.out.println(new String(Packet.getData()));
         }
     }
     
-    public void setFase(String fase, Peer p) throws IOException{
+    public void HandlePhases(String fase, Peer p) throws IOException{
         if(fase.substring(0, 1).equals("a")){
-            System.out.println("ciao");
             byte[] buffer = ("y" + ";" + p.getName() + ";").getBytes();
-            DatagramPacket packetRisposta = new DatagramPacket(buffer, buffer.length, p.getIpAddress(), p.getPort());
-            Receive_socket.send(packetRisposta);
+            DatagramPacket replyPacket = new DatagramPacket(buffer, buffer.length, p.getIpAddress(), p.getPort());
+            Receive_socket.send(replyPacket);
         }else{
-            System.out.println("no");
+            byte[] buffer = "n".getBytes();
+            DatagramPacket replyPacket = new DatagramPacket(buffer, buffer.length, p.getIpAddress(), p.getPort());
+            Receive_socket.send(replyPacket);
         }
     }
+    
+    
 
 }
