@@ -9,7 +9,9 @@ import java.lang.System.Logger;
 import java.lang.System.Logger.Level;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.net.SocketException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -17,40 +19,67 @@ import java.net.SocketException;
  */
 public class HandlePackets extends Thread {
 
-    public DatagramSocket Receive_socket;
-    public boolean running;
+    private DatagramSocket SocketReceive;
+    private DatagramSocket SocketSend;
 
-    public HandlePackets() throws SocketException {
-        Receive_socket = new DatagramSocket(12345);
+    public HandlePackets() {
+        try {
+            SocketReceive = new DatagramSocket(12345);
+        } catch (SocketException ex) {
+            java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        try {
+            SocketSend = new DatagramSocket();
+        } catch (SocketException ex) {
+            java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     @Override
     public void run() {
-        running = true;
-        while (running) {
-            byte[] buffer = new byte[1500];
-            DatagramPacket Packet = new DatagramPacket(buffer, buffer.length);
-            try {
-                Receive_socket.receive(Packet);
-            } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-            }
-            System.out.println(new String(Packet.getData()));
-        }
-    }
-    
-    public void HandlePhases(String fase, Peer p) throws IOException{
-        if(fase.substring(0, 1).equals("a")){
-            byte[] buffer = ("y" + ";" + p.getName() + ";").getBytes();
-            DatagramPacket replyPacket = new DatagramPacket(buffer, buffer.length, p.getIpAddress(), p.getPort());
-            Receive_socket.send(replyPacket);
-        }else{
-            byte[] buffer = "n".getBytes();
-            DatagramPacket replyPacket = new DatagramPacket(buffer, buffer.length, p.getIpAddress(), p.getPort());
-            Receive_socket.send(replyPacket);
-        }
-    }
-    
-    
+        byte[] buffer = new byte[1500];
+        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
+        try {
+            SocketReceive.receive(packet);
+            String data = new String(packet.getData());
+            System.out.println(data);
+
+            if (data.charAt(0) == 'a') {
+                int result = JOptionPane.showConfirmDialog(null, "Vuoi connetterti con " + data.substring(2, data.length()) + "?", "Warning", JOptionPane.YES_NO_OPTION);
+                if (result == JOptionPane.YES_OPTION) {
+                    String nome = JOptionPane.showInputDialog(null, "Inserisci il tuo nome");
+                    byte[] responseBuffer = ("y;" + nome).getBytes();
+                    DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+                    responsePacket.setAddress(packet.getAddress());
+                    responsePacket.setPort(12345);
+                    SocketSend.send(responsePacket);
+                } else {
+                    byte[] responseBuffer = ("n;").getBytes();
+                    DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+                    responsePacket.setAddress(packet.getAddress());
+                    responsePacket.setPort(12345);
+                    SocketSend.send(responsePacket);
+                }
+            }
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }
+
+    public boolean SendOpeningMessage(String data, InetAddress address) {
+        byte[] risposta = data.getBytes();
+
+        DatagramPacket responsePacket = new DatagramPacket(risposta, risposta.length);
+        responsePacket.setAddress(address);
+        responsePacket.setPort(12345);
+
+        try {
+            SocketSend.send(responsePacket);
+            return true;
+        } catch (IOException ex) {
+            java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        return false;
+    }
 }
