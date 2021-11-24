@@ -21,6 +21,8 @@ public class HandlePackets extends Thread {
 
     private DatagramSocket SocketReceive;
     private DatagramSocket SocketSend;
+    private boolean running;
+    private boolean inAttesa;
 
     public HandlePackets() {
         try {
@@ -33,6 +35,7 @@ public class HandlePackets extends Thread {
         } catch (SocketException ex) {
             java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        inAttesa = false;
     }
 
     @Override
@@ -40,46 +43,87 @@ public class HandlePackets extends Thread {
         byte[] buffer = new byte[1500];
         DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
 
-        try {
-            SocketReceive.receive(packet);
-            String data = new String(packet.getData());
-            System.out.println(data);
+        running = true;
+        while (running) {
+            try {
+                SocketReceive.receive(packet);
+                String data = new String(packet.getData());
+                System.out.println(data);
+                String nomeDestinatario = data.substring(2, data.length());
 
-            if (data.charAt(0) == 'a') {
-                int result = JOptionPane.showConfirmDialog(null, "Vuoi connetterti con " + data.substring(2, data.length()) + "?", "Warning", JOptionPane.YES_NO_OPTION);
-                if (result == JOptionPane.YES_OPTION) {
-                    String nome = JOptionPane.showInputDialog(null, "Inserisci il tuo nome");
-                    byte[] responseBuffer = ("y;" + nome).getBytes();
-                    DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
-                    responsePacket.setAddress(packet.getAddress());
-                    responsePacket.setPort(12345);
-                    SocketSend.send(responsePacket);
-                } else {
-                    byte[] responseBuffer = ("n;").getBytes();
-                    DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
-                    responsePacket.setAddress(packet.getAddress());
-                    responsePacket.setPort(12345);
-                    SocketSend.send(responsePacket);
+                if (data.charAt(0) == 'a') {
+                    int result = JOptionPane.showConfirmDialog(null, "Vuoi connetterti con " + nomeDestinatario + "?", "Warning", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        String nome = JOptionPane.showInputDialog(null, "Inserisci il tuo nome");
+                        byte[] responseBuffer = ("y;" + nome).getBytes();
+                        DatagramPacket responsePacket = new DatagramPacket(responseBuffer, responseBuffer.length);
+                        responsePacket.setAddress(packet.getAddress());
+                        responsePacket.setPort(12345);
+                        SocketSend.send(responsePacket);
+                        JOptionPane.showMessageDialog(null, "Connesso con " + nomeDestinatario);
+                    } else {
+                        byte[] responseBuffer2 = ("n;").getBytes();
+                        DatagramPacket responsePacket2 = new DatagramPacket(responseBuffer2, responseBuffer2.length);
+                        responsePacket2.setAddress(packet.getAddress());
+                        responsePacket2.setPort(12345);
+                        SocketSend.send(responsePacket2);
+                        JOptionPane.showMessageDialog(null, nomeDestinatario + "non puó comunicare.");
+                    }
                 }
+                if (data.charAt(0) == 'y') {
+                    byte[] responseBuffer3 = ("y;").getBytes();
+                    DatagramPacket responsePacket3 = new DatagramPacket(responseBuffer3, responseBuffer3.length);
+                    responsePacket3.setAddress(packet.getAddress());
+                    responsePacket3.setPort(12345);
+                    SocketSend.send(responsePacket3);
+                } else {
+                    byte[] responseBuffer4 = ("n;").getBytes();
+                    DatagramPacket responsePacket4 = new DatagramPacket(responseBuffer4, responseBuffer4.length);
+                    responsePacket4.setAddress(packet.getAddress());
+                    responsePacket4.setPort(12345);
+                    SocketSend.send(responsePacket4);
+                }
+
+                if (data.charAt(0) == 'c') {
+                    JOptionPane.showMessageDialog(null, "Disconnesso da " + nomeDestinatario);
+                    byte[] responseBuffer4 = ("c;").getBytes();
+                    DatagramPacket responsePacket4 = new DatagramPacket(responseBuffer4, responseBuffer4.length);
+                    responsePacket4.setAddress(packet.getAddress());
+                    responsePacket4.setPort(12345);
+                    SocketSend.send(responsePacket4);
+                    break;
+                }
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    public void SendOpeningMessage(String data, InetAddress address) {
+        byte[] risposta = data.getBytes();
+
+        DatagramPacket responsePacketOpening = new DatagramPacket(risposta, risposta.length);
+        responsePacketOpening.setAddress(address);
+        responsePacketOpening.setPort(12345);
+
+        try {
+            SocketSend.send(responsePacketOpening);
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }
 
-    public boolean SendOpeningMessage(String data, InetAddress address) {
+    public void CloseConnection(String data, InetAddress address) {
         byte[] risposta = data.getBytes();
 
-        DatagramPacket responsePacket = new DatagramPacket(risposta, risposta.length);
-        responsePacket.setAddress(address);
-        responsePacket.setPort(12345);
+        DatagramPacket responsePacketClosing = new DatagramPacket(risposta, risposta.length);
+        responsePacketClosing.setAddress(address);
+        responsePacketClosing.setPort(12345);
 
         try {
-            SocketSend.send(responsePacket);
-            return true;
+            SocketSend.send(responsePacketClosing);
         } catch (IOException ex) {
             java.util.logging.Logger.getLogger(HandlePackets.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        return false;
     }
 }
