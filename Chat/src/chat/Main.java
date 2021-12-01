@@ -2,8 +2,10 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-package the.wocksapp;
+package chat;
 
+import chat.HandlePackets;
+import chat.HandlePackets;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -16,9 +18,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 /**
  *
@@ -27,39 +31,66 @@ import javax.swing.JTextArea;
 public class Main extends javax.swing.JFrame {
 
     HandlePackets hp;
-    GestisciMessaggi gm;
+    ThreadRepaint trp;
 
     public Main() throws SocketException {
         initComponents();
         hp = new HandlePackets();
-        gm = new GestisciMessaggi();
         hp.start();
+        trp = new ThreadRepaint(this, 33);
+        trp.start();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+        if (!GestioneChat.getInstance().getMsg().equals("")) {
+            String tipo = GestioneChat.getInstance().getMsg().split(";")[0];
+            String messaggio = GestioneChat.getInstance().getMsg().split(";")[1];
+            if (tipo.equals("sx")) {
+                stampaSinistra(messaggio);
+                System.out.println(messaggio);
+                GestioneChat.getInstance().setMsg("");
+            } else {
+                stampaDestra(messaggio);
+                System.out.println(messaggio);
+                GestioneChat.getInstance().setMsg("");
+            }
+        }
+    }
+
+    public void stampaDestra(String msg) {
+        JLabel label = new JLabel();
+        label.setBounds(200, 100, 200, 100);
+        label.setText(msg);
+        this.add(label);
+    }
+
+    public void stampaSinistra(String msg) {
+        JLabel label = new JLabel();
+        label.setBounds(0, 140, 200, 140);
+        label.setText(msg);
+        this.add(label);
     }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        btnSend = new javax.swing.JButton();
-        txtMessage = new javax.swing.JTextField();
+        jTextField1 = new javax.swing.JTextField();
         txtNome = new javax.swing.JTextField();
         lblNome = new javax.swing.JLabel();
         lblIp = new javax.swing.JLabel();
         txtIp = new javax.swing.JTextField();
         btnConnect = new javax.swing.JButton();
-        btnDisconnect = new javax.swing.JButton();
         btnClear = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        textArea = new javax.swing.JTextArea();
+        btnSend = new javax.swing.JButton();
+        btnDisconnect = new javax.swing.JButton();
+        txtMessage = new javax.swing.JTextField();
+
+        jTextField1.setText("jTextField1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-
-        btnSend.setText("SEND");
-        btnSend.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnSendActionPerformed(evt);
-            }
-        });
 
         lblNome.setText("ENTER YOUR NAME:");
 
@@ -72,13 +103,6 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        btnDisconnect.setText("DISCONNECT");
-        btnDisconnect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnDisconnectActionPerformed(evt);
-            }
-        });
-
         btnClear.setText("CLEAR");
         btnClear.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -86,44 +110,49 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
-        textArea.setColumns(20);
-        textArea.setRows(5);
-        jScrollPane1.setViewportView(textArea);
+        btnSend.setText("SEND");
+        btnSend.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSendActionPerformed(evt);
+            }
+        });
+
+        btnDisconnect.setText("DISCONNECT");
+        btnDisconnect.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDisconnectActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(lblNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(23, 23, 23)
+                        .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, 231, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(32, 32, 32)
-                                .addComponent(btnSend, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(btnDisconnect, javax.swing.GroupLayout.PREFERRED_SIZE, 109, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 25, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(lblNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblIp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtIp, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(txtMessage)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnSend)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnDisconnect)
+                        .addGap(16, 16, 16))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(137, 137, 137)
+                        .addComponent(lblIp, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(23, 23, 23)
+                        .addComponent(txtIp, javax.swing.GroupLayout.PREFERRED_SIZE, 191, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(btnConnect, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(48, 48, 48)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(btnClear)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1)))
-                .addContainerGap())
+                        .addGap(136, 136, 136))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -133,57 +162,33 @@ public class Main extends javax.swing.JFrame {
                     .addComponent(lblNome)
                     .addComponent(txtNome, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblIp)
                     .addComponent(txtIp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(21, 21, 21)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnClear)
                     .addComponent(btnConnect))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 244, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSend)
-                    .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnDisconnect))
-                .addGap(19, 19, 19))
+                    .addComponent(btnDisconnect)
+                    .addComponent(txtMessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
-        try {
-            if (!txtMessage.getText().equals("") && !txtNome.getText().equals("") && !txtIp.getText().equals("")) {
-                hp.sendMessage("m;" + txtMessage.getText(), InetAddress.getByName(txtIp.getText()));
-                System.out.println(gm.getMessaggi());
-            }
-        } catch (UnknownHostException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_btnSendActionPerformed
-
     private void btnConnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConnectActionPerformed
         try {
             if (!txtNome.getText().equals("") && !txtIp.getText().equals("")) {
-                hp.SendOpeningMessage("a; " + txtNome.getText(), InetAddress.getByName(txtIp.getText()));
+                hp.Send("a;" + txtNome.getText() + ";", InetAddress.getByName(txtIp.getText()));
             }
         } catch (UnknownHostException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnConnectActionPerformed
-
-
-    private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisconnectActionPerformed
-        try {
-            if (!txtNome.getText().equals("") && !txtIp.getText().equals("")) {
-                hp.CloseConnection("c;", InetAddress.getByName(txtIp.getText()));
-            }
-        } catch (UnknownHostException ex) {
-            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-    }//GEN-LAST:event_btnDisconnectActionPerformed
 
     private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearActionPerformed
         btnConnect.setEnabled(true);
@@ -192,6 +197,25 @@ public class Main extends javax.swing.JFrame {
         txtNome.setEnabled(true);
         txtNome.setText("");
     }//GEN-LAST:event_btnClearActionPerformed
+
+    private void btnSendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSendActionPerformed
+        try {
+            if (!txtMessage.getText().equals("")) {
+                hp.Send("m;" + txtMessage.getText() + ";", InetAddress.getByName(txtIp.getText()));
+                GestioneChat.getInstance().AddMessaggio(txtMessage.getText(), "dx");
+            }
+        } catch (UnknownHostException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnSendActionPerformed
+
+    private void btnDisconnectActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDisconnectActionPerformed
+        try {
+            hp.Send("c;" + txtNome.getText() + ";", InetAddress.getByName(txtIp.getText()));
+        } catch (UnknownHostException ex) {
+            java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnDisconnectActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -215,9 +239,9 @@ public class Main extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(Main.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
 
         /* Create and display the form */
+        GestioneChat.getInstance();
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 try {
@@ -234,12 +258,12 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton btnConnect;
     private javax.swing.JButton btnDisconnect;
     private javax.swing.JButton btnSend;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblIp;
     private javax.swing.JLabel lblNome;
-    private javax.swing.JTextArea textArea;
     private javax.swing.JTextField txtIp;
     private javax.swing.JTextField txtMessage;
     private javax.swing.JTextField txtNome;
     // End of variables declaration//GEN-END:variables
+
 }
