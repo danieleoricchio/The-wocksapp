@@ -59,18 +59,28 @@ public class Main extends javax.swing.JFrame {
         }
     }
 
+    int y = 20;
+    int h = 20;
     public void stampaDestra(String msg) {
         JLabel label = new JLabel();
-        label.setBounds(200, 100, 200, 100);
+        label.setBounds(200, y, 150 + msg.length(), 20);
         label.setText(msg);
         this.add(label);
+        pannello.add(label);
+        pannello.setSize(pannello.getWidth(), h);
+        h += 20;
+        y += 20;
     }
 
     public void stampaSinistra(String msg) {
         JLabel label = new JLabel();
-        label.setBounds(0, 140, 200, 140);
+        label.setBounds(0, y, 20 + msg.length(), 50);
         label.setText(msg);
         this.add(label);
+        pannello.add(label);
+        pannello.setSize(pannello.getWidth(), h);
+        h += 20;
+        y += 20;
     }
 
     @SuppressWarnings("unchecked")
@@ -87,6 +97,8 @@ public class Main extends javax.swing.JFrame {
         btnSend = new javax.swing.JButton();
         btnDisconnect = new javax.swing.JButton();
         txtMessage = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        pannello = new javax.swing.JPanel();
 
         jTextField1.setText("jTextField1");
 
@@ -124,6 +136,19 @@ public class Main extends javax.swing.JFrame {
             }
         });
 
+        javax.swing.GroupLayout pannelloLayout = new javax.swing.GroupLayout(pannello);
+        pannello.setLayout(pannelloLayout);
+        pannelloLayout.setHorizontalGroup(
+            pannelloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 332, Short.MAX_VALUE)
+        );
+        pannelloLayout.setVerticalGroup(
+            pannelloLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 230, Short.MAX_VALUE)
+        );
+
+        jScrollPane1.setViewportView(pannello);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -131,6 +156,9 @@ public class Main extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1)
+                        .addContainerGap())
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addComponent(lblNome, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(23, 23, 23)
@@ -169,7 +197,9 @@ public class Main extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnClear)
                     .addComponent(btnConnect))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 244, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 232, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSend)
                     .addComponent(btnDisconnect)
@@ -258,9 +288,11 @@ public class Main extends javax.swing.JFrame {
     private javax.swing.JButton btnConnect;
     private javax.swing.JButton btnDisconnect;
     private javax.swing.JButton btnSend;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JLabel lblIp;
     private javax.swing.JLabel lblNome;
+    private javax.swing.JPanel pannello;
     private javax.swing.JTextField txtIp;
     private javax.swing.JTextField txtMessage;
     private javax.swing.JTextField txtNome;

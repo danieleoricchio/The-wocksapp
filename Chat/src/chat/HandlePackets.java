@@ -47,7 +47,6 @@ public class HandlePackets extends Thread {
         String nomeDestinatario = "";
         String data = "";
         running = true;
-        boolean s = false;
         while (running) {
             try {
                 SocketReceive.receive(packet);
@@ -75,11 +74,12 @@ public class HandlePackets extends Thread {
                     connesso = true;
                 }
                 if (connesso) {
-                    JOptionPane.showMessageDialog(null, "Puoi iniziare a messaggiare con: " + nomeDestinatario);
                     if (data.charAt(0) == 'm') {
                         String msg = vs[1];
                         GestioneChat.getInstance().AddMessaggio(msg, "sx");
+                        Send("m;", packet.getAddress());
                         msg = "";
+                        connesso = false;
                     }
                     if (data.charAt(0) == 'c') {
                         JOptionPane.showMessageDialog(null, "Disconnesso da " + nomeDestinatario);
